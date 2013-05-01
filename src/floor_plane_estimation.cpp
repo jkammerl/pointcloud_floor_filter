@@ -191,5 +191,81 @@ void FloorPlaneEstimation::floorPlaneEstimation(const sensor_msgs::ImageConstPtr
 
 }
 
+
+void FloorPlaneEstimation::floorPlaneEstimation(const sensor_msgs::ImageConstPtr& depth_msg,
+                                                sensor_msgs::CameraInfoConstPtr info_msg,
+                                                geometry_msgs::TransformStampedPtr depth_to_odom_transform,
+                                                double preselect_floor_distance,
+                                                geometry_msgs::PointPtr& out_normal
+                                                )
+{
+
+  if (info_msg)
+  {
+    depth_converter_->initialize(depth_msg, info_msg);
+
+    tf::Transform depth_to_odom;
+    tf::transformMsgToTF(depth_to_odom_transform->transform, depth_to_odom);
+
+    const float* depth_ptr = reinterpret_cast<const float*>(&depth_msg->data[0]);
+
+    std::size_t width = depth_msg->width;
+    std::size_t height = depth_msg->height;
+
+    boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ > > point_selection = boost::make_shared<pcl::PointCloud< pcl::PointXYZ > >();
+
+    point_selection->points.reserve(width*height);
+
+    for (size_t y=0; y<height; ++y)
+      for (size_t x=0; x<width; ++x)
+      {
+        float depth = *(depth_ptr+
+                        width*y+x);
+
+        if (!isnan(depth))
+        {
+          Point2D p_in;
+          p_in.x = x;
+          p_in.y = y;
+
+          Point3D p_out;
+          depth_converter_->depthTo3DPoint<const Point2D, Point3D>(p_in, depth, p_out );
+
+          tf::Point point_out( p_out.x, p_out.y, p_out.z);
+
+          geometry_msgs::Point odom_point;
+          tf::pointTFToMsg(depth_to_odom*point_out, odom_point);
+
+
+          if (fabs(odom_point.z)<preselect_floor_distance)
+          {
+            pcl::PointXYZ pcl_point(p_out.x, p_out.y, p_out.z);
+            point_selection->points.push_back(pcl_point);
+          }
+        }
+      }
+
+    pcl::ModelCoefficients coeffs;
+    pcl::PointIndices::Ptr inliers = boost::make_shared<pcl::PointIndices>();
+
+    pcl::SACSegmentation < pcl::PointXYZ > seg;
+    seg.setOptimizeCoefficients(true);
+    seg.setModelType(pcl::SACMODEL_PLANE);
+    seg.setMethodType(pcl::SAC_RANSAC);
+    seg.setDistanceThreshold(preselect_floor_distance);
+
+    seg.setInputCloud(point_selection);
+    seg.segment(*inliers, coeffs);
+
+
+    out_normal = boost::make_shared<geometry_msgs::Point>();
+
+    out_normal->x = coeffs.values[0];
+    out_normal->y = coeffs.values[1];
+    out_normal->z = coeffs.values[2];
+  }
+
+}
+
 }
 

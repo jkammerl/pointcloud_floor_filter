@@ -65,6 +65,13 @@ public:
                             sensor_msgs::PointCloud2& out_cloud,
                             geometry_msgs::PointPtr& out_normal
                             );
+
+  void floorPlaneEstimation(const sensor_msgs::ImageConstPtr& depth_msg,
+                            sensor_msgs::CameraInfoConstPtr info_msg,
+                            geometry_msgs::TransformStampedPtr depth_to_odom_transform,
+                            double preselect_floor_distance,
+                            geometry_msgs::PointPtr& out_normal
+                            );
 private:
 
   boost::shared_ptr<DepthToPointCloud> depth_converter_;
