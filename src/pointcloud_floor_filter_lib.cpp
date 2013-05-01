@@ -52,7 +52,7 @@ PointcloudFloorFilter::PointcloudFloorFilter(ros::NodeHandle& nh, ros::NodeHandl
     tf_buffer_(new tf2::Buffer()),
     tf_listener_(  new tf2::TransformListener(*tf_buffer_)),
     ransac_floor_distance_(0.15),
-    filtered_floor_distance_(0.05)
+    filtered_floor_distance_(0.10)
 {
 
   // read depth map topic from param server
@@ -71,7 +71,7 @@ PointcloudFloorFilter::PointcloudFloorFilter(ros::NodeHandle& nh, ros::NodeHandl
   ros::SubscriberStatusCallback connect_cb = boost::bind(&PointcloudFloorFilter::connectCb, this);
 
   boost::lock_guard<boost::mutex> lock(connect_mutex_);
-  pointcloud_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("floor_points", 0, connect_cb, connect_cb);
+  pointcloud_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("floor_filtered_pointcloud", 0, connect_cb, connect_cb);
 
   // Initialize dynamic reconfigure
   reconfigure_server_.reset(new ReconfigureServer(pnh_));
