@@ -59,7 +59,7 @@ PointcloudFloorFilter::PointcloudFloorFilter(ros::NodeHandle& nh, ros::NodeHandl
   pnh_.param<std::string>("depth_image", depthmap_topic_, "/head_camera/depth_registered/image");
 
   // read depth transport from param server
-  pnh_.param<std::string>("depth_topic_transport", depth_topic_transport_, "compressedDepth");
+  pnh_.param<std::string>("depth_topic_transport", depth_topic_transport_, "raw");
 
   // read odom frame from param server
   pnh_.param<std::string>("base_footprint_frame", odom_frame_, "base_footprint");
