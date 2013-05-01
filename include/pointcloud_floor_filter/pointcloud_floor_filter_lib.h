@@ -61,7 +61,7 @@
 #include <pcl/ros/conversions.h>
 
 #include <dynamic_reconfigure/server.h>
-#include <floor_filtered_pointcloud/FloorFilteredPointCloudConfig.h>
+#include <pointcloud_floor_filter/FloorFilteredPointCloudConfig.h>
 
 
 namespace floor_filtered_pointcloud
@@ -72,7 +72,7 @@ class FloorPlaneEstimation;
 class PointcloudFloorFilter
 {
 public:
-  typedef FloorFilteredPointCloudConfig Config;
+  typedef pointcloud_floor_filter::FloorFilteredPointCloudConfig Config;
   typedef dynamic_reconfigure::Server<Config> ReconfigureServer;
 
   PointcloudFloorFilter(ros::NodeHandle& nh, ros::NodeHandle& pnh);

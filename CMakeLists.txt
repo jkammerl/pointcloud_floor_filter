@@ -20,7 +20,7 @@ generate_dynamic_reconfigure_options(cfg/FloorFilter.cfg)
 
 catkin_package(
     INCLUDE_DIRS include
-    LIBRARIES ${PROJECT_NAME}
+    LIBRARIES pointcloud_floor_filter_lib
     CATKIN_DEPENDS dynamic_reconfigure
                    geometry_msgs
                    roscpp
@@ -29,7 +29,7 @@ catkin_package(
                    tf_conversions
                    sensor_msgs
                    image_transport
-                   pcl_ros
+                   pcl_ros 
                    
   )
                                         

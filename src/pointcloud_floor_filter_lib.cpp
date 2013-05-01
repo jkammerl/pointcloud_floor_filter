@@ -158,21 +158,21 @@ void PointcloudFloorFilter::depthImageCallback(const sensor_msgs::ImageConstPtr&
       *depth_to_odom_transform = tf_buffer_->lookupTransform(odom_frame_, source_frame, depth_msg->header.stamp,
                                                              ros::Duration(3.0));
 
-      sensor_msgs::PointCloud2 cloud_msg;
-      geometry_msgs::PointPtr out_normal(new geometry_msgs::Point);
+      sensor_msgs::PointCloud2 floor_filtered_pointcloud;
+      geometry_msgs::PointPtr floor_normal(new geometry_msgs::Point);
 
       floor_plane_estimation_->floorPlaneEstimation(depth_msg,
                                                     camera_info_msg,
                                                     depth_to_odom_transform,
                                                     ransac_floor_distance_,
                                                     filtered_floor_distance_,
-                                                    cloud_msg,
-                                                    out_normal);
+                                                    floor_filtered_pointcloud,
+                                                    floor_normal);
 
-      cloud_msg.header.stamp = ros::Time::now();
-      cloud_msg.header.frame_id = odom_frame_;
+      floor_filtered_pointcloud.header.stamp = ros::Time::now();
+      floor_filtered_pointcloud.header.frame_id = odom_frame_;
 
-      pointcloud_pub_.publish(cloud_msg);
+      pointcloud_pub_.publish(floor_filtered_pointcloud);
     }
     catch (const tf2::TransformException &ex)
     {
