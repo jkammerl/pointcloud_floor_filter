@@ -60,19 +60,26 @@
 namespace floor_filtered_pointcloud
 {
 
-struct Point2D
+union Point2D
 {
-  double x;
-  double y;
+  struct
+  {
+    double x;
+    double y;
+  };
+  double coord[2];
 };
 
-struct Point3D
+union Point3D
 {
-  double x;
-  double y;
-  double z;
+  struct
+  {
+    double x;
+    double y;
+    double z;
+  };
+  double coord[3];
 };
-
 
 FloorPlaneEstimation::FloorPlaneEstimation() :
     depth_converter_(new DepthToPointCloud())
